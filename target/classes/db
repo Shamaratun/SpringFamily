@@ -1,0 +1,14 @@
+CREATE TABLE ProductSB (
+    id number GENERATED ALWAYS AS IDENTITY START WITH  1 INCREMENT BY 1 PRIMARY KEY,
+    name VARCHAR2(255) ,
+    model VARCHAR2(255),
+    quantity number, 
+    price DECIMAL(10, 2)
+);
+
+SELECT * FROM ProductSB
+
+DROP TABLE ProductSB
+
+ INSERT INTO productSB (name, model,quantity, price)
+VALUES ('Product A',  'Brand X',50, 15000.00);
