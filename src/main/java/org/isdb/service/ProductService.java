@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import org.isdb.model.Product;
 import org.isdb.repository.ProductRepository;
+import org.springframework.stereotype.Service;
 
 @Service
 public class ProductService {

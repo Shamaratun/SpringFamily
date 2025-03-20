@@ -9,10 +9,15 @@ import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
-import javax.swing.tree.RowMapper;
 
 import org.isdb.model.Product;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
+import org.springframework.stereotype.Repository;
 
 @Repository
 public class ProductRepository {
@@ -30,12 +35,10 @@ public class ProductRepository {
 	public int save(Product product) {
 		Map<String, Object> parameters = new HashMap<>();
 		parameters.put("name", product.getName());
-		parameters.put("email", product.getEmail());
-		parameters.put("description", product.getDescription());
+		parameters.put("model", product.getModel());
+		
 		parameters.put("quantity", product.getQuantity());
-		parameters.put("address", product.getDescription());
-		parameters.put("purchaseDate", product.getPurchaseDate());
-		parameters.put("sellDate", product.getSellDate());
+		
 
 		parameters.put("price", product.getPrice());
 
@@ -54,15 +57,15 @@ public class ProductRepository {
 
 	public List<Product> findAll() {
 		String sql = "SELECT * FROM ProductSB";
-		return jdbcTemplate.query(sql, new EmployeeRowMapper());
+		return jdbcTemplate.query(sql, new ProductRowMapper());
 	}
 
 	public int update(Product product) {
-		String sql = "UPDATE ProductSB SET name = ?, email = ?, description = ?, "
-				+ "quantity = ?, address = ?, pruchaseDate = ?, sellDate = ?, price = ? WHERE id = ?";
+		String sql = "UPDATE ProductSB SET name = ?, model = ?,  "
+				+ "quantity = ?, price = ? WHERE id = ?";
 
-		return jdbcTemplate.update(sql, product.getName(), product.getEmail(), product.getDescription(),
-				product.getQuantity(), product.getAddress(), product.getPurchaseDate(), product.getSellDate(),
+		return jdbcTemplate.update(sql, product.getName(), product.getModel(),
+				product.getQuantity(),
 				product.getPrice(), product.getId());
 	}
 
@@ -79,16 +82,14 @@ public class ProductRepository {
 
 	public List<Product> findByName(String name) {
 		String sql = "SELECT * FROM ProductSB WHERE name like ?";
-		return jdbcTemplate.query(sql, newProductRowMapper(), "%" + name + "%");
+		return jdbcTemplate.query(sql, new ProductRowMapper(), "%" + name + "%");
 	}
 
 	private static class ProductRowMapper implements RowMapper<Product> {
 
 		public Product mapRow(ResultSet rs, int rowNum) throws SQLException {
-			return new Product(rs.getInt("id"), rs.getString("name"), rs.getString("email"),
-					rs.getString("description"), rs.getInt("quantity"), rs.getString("address"),
-					rs.getObject("purchaseDate", LocalDate.class), rs.getObject("sellDate", LocalDate.class),
-					rs.getDouble("price"));
+			return new Product(rs.getInt("id"), rs.getString("name"), rs.getString("model"),
+					 rs.getInt("quantity"),	rs.getDouble("price"));
 		}
 	}
 
@@ -100,12 +101,9 @@ public class ProductRepository {
 
 			// Set the parameters
 			preparedStatement.setString(1, product.getName());
-			preparedStatement.setString(2, product.getEmail());
-			preparedStatement.setString(3, product.getDescription());
+			preparedStatement.setString(2, product.getModel());
 			preparedStatement.setInt(4, product.getQuantity());
-			preparedStatement.setString(5, product.getAddress());
-			preparedStatement.setObject(6, product.getPurchaseDate());
-			preparedStatement.setObject(7, product.getSellDate());
+			
 
 			preparedStatement.setDouble(8, product.getPrice());
 
@@ -122,9 +120,8 @@ public class ProductRepository {
 					int id = generatedKeys.getInt(1);
 
 					// Set the ID in the product object
-					Product savedEmployee = new Product(id, product.getName(), product.getEmail(),
-							product.getDescription(), product.getQuantity(), product.getAddress(),
-							product.getPurchaseDate(), product.getSellDate(), product.getPrice());
+					Product savedEmployee = new Product(id, product.getName(), product.getModel(),
+						 product.getQuantity(), product.getPrice());
 
 					return savedEmployee;
 				} else {

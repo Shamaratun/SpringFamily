@@ -4,9 +4,18 @@ import java.util.List;
 
 import org.isdb.model.Product;
 import org.isdb.service.ProductService;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping(value = "/Product")
+@RequestMapping("/product")
 public class ProductController {
 
 	private ProductService service;
@@ -30,8 +39,8 @@ public class ProductController {
 	}
 
 	@GetMapping
-	public List<Product> getallEmp() {
-		List<Product> allPro = service.getAllEmp();
+	public List<Product> getallPro() {
+		List<Product> allPro = service.getAllPro();
 
 		return allPro;
 	}
@@ -47,11 +56,13 @@ public class ProductController {
 		return updated;
 	}
 
-	@GetMapping("/{name}")
-	public List<Product> getProByName(@PathVariable String name) {
+	@GetMapping("/byName")
+	public List<Product> getProByName(@RequestParam String name) {
 		List<Product> ProByName = service.getProByName(name);
 
-		return proByName;
+		return ProByName;
 	}
+
+	
 
 }
